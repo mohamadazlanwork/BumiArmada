@@ -107,36 +107,35 @@ button:hover { background: #059669; }
 table {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(20, 30, 50, 0.7); /* lebih gelap supaya teks nampak */
-  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.9); /* putih cerah supaya kontras */
+  backdrop-filter: blur(12px);
   border-radius: 12px;
   overflow: hidden;
-  color: #f8fafc;
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  color: #111827; /* teks gelap */
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
 
 thead {
-  background: rgba(15, 23, 42, 0.9); /* header table gelap */
+  background: rgba(0, 0, 0, 0.1); /* header kelabu lembut */
 }
 
 th, td {
   padding: 14px;
   text-align: left;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  color: #ffffff; /* tulisan putih terang */
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  color: #111827; /* hitam pekat */
   font-size: 14px;
 }
 
 thead th {
-  color: #a5f3fc; /* cyan lembut utk tajuk header */
+  color: #000000; /* header hitam penuh */
   font-weight: 600;
-  letter-spacing: 0.3px;
 }
 
 tbody tr:hover td {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
+  background: rgba(0,0,0,0.05); /* hover kelabu lembut */
+  color: #000;
   transition: 0.3s;
 }
 
