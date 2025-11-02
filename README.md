@@ -111,16 +111,27 @@ table {
   backdrop-filter: blur(12px);
   border-radius: 12px;
   overflow: hidden;
+  color: #f1f5f9;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 thead {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.3);
 }
 th, td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #f8fafc;
 }
-tr:hover { background: rgba(255,255,255,0.15); }
+thead th {
+  color: #ffffff;
+  font-weight: 600;
+}
+tbody tr:hover td {
+  color: #ffffff;
+  background: rgba(255,255,255,0.2);
+}
 
 /* === Note === */
 .note {
@@ -220,7 +231,7 @@ function buildDashboard(parsed) {
     const cleared = data.filter(x => x.MedicalStatus === "Clear").length;
     const pending = data.filter(x => x.MedicalStatus === "Pending").length;
     const further = data.filter(x => x.MedicalStatus === "Further Check").length;
-    const avgChecklist = (data.reduce((s,x)=>s+Number(x.ChecklistCompletionPct),0)/total).toFixed(1);
+    const avgChecklist = (data.reduce((s,x)=>s+Number(x.ChecklistCompletionPct||0),0)/total).toFixed(1);
     totalEmp.textContent = total;
     avgChecklist.textContent = avgChecklist + "%";
     pendingMed.textContent = pending;
