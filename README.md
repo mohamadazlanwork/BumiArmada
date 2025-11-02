@@ -35,9 +35,11 @@ h1 {
 }
 #lastUpdated {
   text-align: center;
-  color: #cbd5e1;
-  font-size: 14px;
-  margin-bottom: 30px;
+  color: #38bdf8;
+  font-family: monospace;
+  text-shadow: 0 0 6px #38bdf8;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
 }
 
 /* === Dashboard Cards === */
@@ -168,12 +170,15 @@ tbody tr:hover td {
 
 <!-- FILTERS -->
 <div class="filters">
-  <div class="filter-box"><select id="filterCountry"><option value="">Filter by Country</option></select></div>
-  <div class="filter-box"><select id="filterDept"><option value="">Filter by Department</option></select></div>
-  <div class="filter-box"><select id="filterMed"><option value="">Filter by Medical Status</option></select></div>
-  <div class="filter-box"><input type="text" id="searchName" placeholder="Search by Name"></div>
+  <select id="filterCountry"><option value="">Filter by Country</option></select>
+  <select id="filterDept"><option value="">Filter by Dept</option></select>
+  <select id="filterMed"><option value="">Filter by Med</option></select>
+  <input type="text" id="searchName" placeholder="Search by Name">
   <button id="clearFilters">Clear Filters</button>
+  <button id="exportCSV">⬇️ Export CSV</button>
+  <button id="toggleTheme">🌙 Dark Mode</button>
 </div>
+<p id="lastUpdated"></p>
 
 <!-- TABLE -->
 <table id="empTable">
@@ -273,6 +278,31 @@ function buildDashboard(parsed) {
   [searchName,fCountry,fDept,fMed].forEach(el=>el.addEventListener("input",applyFilters));
   clearBtn.addEventListener("click",()=>{[searchName,fCountry,fDept,fMed].forEach(el=>el.value="");applyFilters();});
 }
+// === 🌙 DARK MODE TOGGLE ===
+document.getElementById("toggleTheme")?.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+});
+
+// === 💾 EXPORT TO CSV ===
+document.getElementById("exportCSV")?.addEventListener("click", () => {
+  const table = document.getElementById("empTable");
+  let csv = [];
+  for (let row of table.rows) {
+    let cells = Array.from(row.cells).map(td => `"${td.innerText}"`);
+    csv.push(cells.join(","));
+  }
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `BumiArmada_Export_${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+});
+
+// === 🕓 LAST UPDATED TIMESTAMP (GLOW) ===
+const lastUpdated = document.getElementById("lastUpdated");
+if (lastUpdated) {
+  lastUpdated.textContent = "Last Updated: " + new Date().toLocaleString();
+}  
 </script>
 
 </body>
