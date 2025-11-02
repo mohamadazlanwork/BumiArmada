@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bumi Armada Employee Lifecycle Dashboard (Demo)</title>
+<title>Bumi Armada Employee Lifecycle Dashboard (Live)</title>
 
 <!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -33,14 +33,12 @@ h1 {
   font-size: 36px;
   font-weight: 700;
   letter-spacing: 1px;
-  animation: fadeIn 1.5s ease;
 }
-h2 {
+#lastUpdated {
   text-align: center;
   color: #cbd5e1;
-  font-weight: 400;
-  margin-bottom: 40px;
-  animation: fadeIn 2s ease;
+  font-size: 14px;
+  margin-bottom: 30px;
 }
 
 /* === Dashboard Cards === */
@@ -60,7 +58,6 @@ h2 {
   border: 1px solid rgba(255,255,255,0.2);
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeUp 1.2s ease;
 }
 .card:hover {
   transform: translateY(-6px);
@@ -114,7 +111,6 @@ table {
   backdrop-filter: blur(12px);
   border-radius: 12px;
   overflow: hidden;
-  animation: fadeIn 2s ease;
 }
 thead {
   background: rgba(0,0,0,0.2);
@@ -138,17 +134,14 @@ tr:hover { background: rgba(255,255,255,0.15); }
   color: #cbd5e1;
   font-size: 14px;
 }
-
-/* === Animations === */
-@keyframes fadeIn {from{opacity:0;}to{opacity:1;}}
-@keyframes fadeUp {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
 
 <h1>🚢 Bumi Armada Employee Lifecycle Dashboard</h1>
-<h2>All data below is demo and non-confidential</h2>
+<div id="lastUpdated">Loading live data...</div>
 
+<!-- KPI CARDS -->
 <div class="dashboard">
   <div class="card"><h3>Total Employees</h3><p id="totalEmp">0</p></div>
   <div class="card"><h3>Average Checklist %</h3><p id="avgChecklist">0%</p></div>
@@ -157,22 +150,16 @@ tr:hover { background: rgba(255,255,255,0.15); }
   <div class="card"><h3>Cleared</h3><p id="cleared">0</p></div>
 </div>
 
+<!-- FILTERS -->
 <div class="filters">
-  <div class="filter-box">
-    <select id="filterCountry"><option value="">Filter by Country</option></select>
-  </div>
-  <div class="filter-box">
-    <select id="filterDept"><option value="">Filter by Department</option></select>
-  </div>
-  <div class="filter-box">
-    <select id="filterMed"><option value="">Filter by Medical Status</option></select>
-  </div>
-  <div class="filter-box">
-    <input type="text" id="searchName" placeholder="Search by Name">
-  </div>
+  <div class="filter-box"><select id="filterCountry"><option value="">Filter by Country</option></select></div>
+  <div class="filter-box"><select id="filterDept"><option value="">Filter by Department</option></select></div>
+  <div class="filter-box"><select id="filterMed"><option value="">Filter by Medical Status</option></select></div>
+  <div class="filter-box"><input type="text" id="searchName" placeholder="Search by Name"></div>
   <button id="clearFilters">Clear Filters</button>
 </div>
 
+<!-- TABLE -->
 <table id="empTable">
   <thead>
     <tr>
@@ -183,102 +170,93 @@ tr:hover { background: rgba(255,255,255,0.15); }
   <tbody></tbody>
 </table>
 
-<div class="note">
-⚠️ Demo dashboard built for <b>Bumi Armada HR Portfolio</b>. All data is simulated and for visualization only.
-</div>
+<div class="note">⚠️ Dashboard pulls live data from Google Sheets (non-confidential demo).</div>
 
 <script>
-// === DATA (inline for demo, can replace with CSV later) ===
-const data = `EmployeeID,FullName,Country,Department,Role,OfferDate,OfferAcceptedDate,StartDate,ChecklistCompletionPct,DocumentsUploaded,MedicalStatus,MedicalDate,TimeToStartDays,ExitRequestDate,ExitCompleteDate,OffboardCycleDays,Notes
-BA-0001,Farah Sulaiman,Malaysia,HR,Engineer,2024-10-02,2024-10-04,2024-10-19,94,10,Clear,2024-10-12,15,,,,"Follow-up required"
-BA-0002,Nicholas Tan,Germany,HR,Assistant,2024-10-19,2024-10-22,2024-11-09,75,9,Pending,,18,,,,"Smooth onboarding"
-BA-0003,Hafiz Abdullah,England,IT,Coordinator,2024-10-01,2024-10-02,2024-10-11,80,8,Clear,2024-10-13,9,,,,"Smooth onboarding"
-BA-0004,Marcus Lim,India,Operations,Support,2024-10-02,2024-10-03,2024-10-15,72,7,Clear,2024-10-17,12,2024-12-28,2025-01-02,5,"Smooth onboarding"
-BA-0005,Rachel Tan,London,Quality,Analyst,2024-10-17,2024-10-18,2024-11-05,74,10,Further Check,2024-11-01,18,,,,"Smooth onboarding"
-BA-0006,Nicholas Tan,Malaysia,HR,Executive,2024-10-07,2024-10-09,2024-10-19,89,7,Pending,,10,2025-01-16,2025-01-19,3,"All docs complete"`;
+// === 1️⃣ CONNECT TO GOOGLE SHEETS ===
+const sheetURL = "https://docs.google.com/spreadsheets/d/17TRf1LsFJbccLUwnWD7PWHGrkeclVJh0/gviz/tq?tqx=out:csv";
 
-// === Parse CSV ===
-const parsed = Papa.parse(data.trim(), {header: true}).data;
-
-// === Populate Table ===
-const tbody = document.querySelector("#empTable tbody");
-parsed.forEach(emp => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${emp.EmployeeID}</td>
-    <td>${emp.FullName}</td>
-    <td>${emp.Country}</td>
-    <td>${emp.Department}</td>
-    <td>${emp.Role}</td>
-    <td>${emp.ChecklistCompletionPct}%</td>
-    <td>${emp.MedicalStatus}</td>
-    <td>${emp.StartDate}</td>
-    <td>${emp.Notes}</td>`;
-  tbody.appendChild(tr);
+Papa.parse(sheetURL, {
+  download: true,
+  header: true,
+  complete: function(results) {
+    const data = results.data.filter(r => r.EmployeeID);
+    document.getElementById("lastUpdated").innerText =
+      "Last updated: " + new Date().toLocaleString();
+    buildDashboard(data);
+  }
 });
 
-// === Populate Filters ===
-function uniqueValues(field) {
-  return [...new Set(parsed.map(x => x[field]).filter(Boolean))];
-}
-function fillSelect(id, arr) {
-  const sel = document.getElementById(id);
-  arr.forEach(v => {
-    const opt = document.createElement("option");
-    opt.textContent = v;
-    sel.appendChild(opt);
+// === 2️⃣ BUILD DASHBOARD ===
+function buildDashboard(parsed) {
+  const tbody = document.querySelector("#empTable tbody");
+  tbody.innerHTML = "";
+
+  parsed.forEach(emp => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${emp.EmployeeID}</td>
+      <td>${emp.FullName}</td>
+      <td>${emp.Country}</td>
+      <td>${emp.Department}</td>
+      <td>${emp.Role}</td>
+      <td>${emp.ChecklistCompletionPct}%</td>
+      <td>${emp.MedicalStatus}</td>
+      <td>${emp.StartDate}</td>
+      <td>${emp.Notes}</td>`;
+    tbody.appendChild(tr);
   });
-}
-fillSelect("filterCountry", uniqueValues("Country"));
-fillSelect("filterDept", uniqueValues("Department"));
-fillSelect("filterMed", uniqueValues("MedicalStatus"));
 
-// === Stats ===
-function updateCards(data) {
-  const total = data.length;
-  const cleared = data.filter(x => x.MedicalStatus === "Clear").length;
-  const pending = data.filter(x => x.MedicalStatus === "Pending").length;
-  const further = data.filter(x => x.MedicalStatus === "Further Check").length;
-  const avgChecklist = (data.reduce((s,x)=>s+Number(x.ChecklistCompletionPct),0)/total).toFixed(1);
-  document.getElementById("totalEmp").textContent = total;
-  document.getElementById("avgChecklist").textContent = avgChecklist + "%";
-  document.getElementById("pendingMed").textContent = pending;
-  document.getElementById("furtherCheck").textContent = further;
-  document.getElementById("cleared").textContent = cleared;
-}
-updateCards(parsed);
+  // Populate Filters
+  function uniqueValues(field){return [...new Set(parsed.map(x=>x[field]).filter(Boolean))];}
+  function fillSelect(id,arr){const sel=document.getElementById(id);sel.innerHTML=`<option value="">Filter by ${id.replace("filter","")}</option>`;arr.forEach(v=>{const opt=document.createElement("option");opt.textContent=v;sel.appendChild(opt);});}
+  fillSelect("filterCountry", uniqueValues("Country"));
+  fillSelect("filterDept", uniqueValues("Department"));
+  fillSelect("filterMed", uniqueValues("MedicalStatus"));
 
-// === Filters Logic ===
-const searchName = document.getElementById("searchName");
-const fCountry = document.getElementById("filterCountry");
-const fDept = document.getElementById("filterDept");
-const fMed = document.getElementById("filterMed");
-const clearBtn = document.getElementById("clearFilters");
+  // Stats
+  function updateCards(data) {
+    const total = data.length;
+    const cleared = data.filter(x => x.MedicalStatus === "Clear").length;
+    const pending = data.filter(x => x.MedicalStatus === "Pending").length;
+    const further = data.filter(x => x.MedicalStatus === "Further Check").length;
+    const avgChecklist = (data.reduce((s,x)=>s+Number(x.ChecklistCompletionPct),0)/total).toFixed(1);
+    totalEmp.textContent = total;
+    avgChecklist.textContent = avgChecklist + "%";
+    pendingMed.textContent = pending;
+    furtherCheck.textContent = further;
+    cleared.textContent = cleared;
+  }
+  updateCards(parsed);
 
-function applyFilters() {
-  const search = searchName.value.toLowerCase();
-  const c = fCountry.value, d = fDept.value, m = fMed.value;
-  const rows = document.querySelectorAll("#empTable tbody tr");
-  let filtered = [];
-  rows.forEach(row => {
-    const cells = row.children;
-    const name = cells[1].textContent.toLowerCase();
-    const country = cells[2].textContent;
-    const dept = cells[3].textContent;
-    const med = cells[6].textContent;
-    const match = (!c||country===c) && (!d||dept===d) && (!m||med===m) && name.includes(search);
-    row.style.display = match ? "" : "none";
-    if (match) filtered.push(row);
-  });
-  updateCards(parsed.filter(x =>
-    (!c||x.Country===c)&&(!d||x.Department===d)&&(!m||x.MedicalStatus===m)&&x.FullName.toLowerCase().includes(search)
-  ));
+  // Filters Logic
+  const searchName = document.getElementById("searchName");
+  const fCountry = document.getElementById("filterCountry");
+  const fDept = document.getElementById("filterDept");
+  const fMed = document.getElementById("filterMed");
+  const clearBtn = document.getElementById("clearFilters");
+
+  function applyFilters() {
+    const search = searchName.value.toLowerCase();
+    const c = fCountry.value, d = fDept.value, m = fMed.value;
+    const rows = document.querySelectorAll("#empTable tbody tr");
+    const filteredData = parsed.filter(x =>
+      (!c||x.Country===c)&&(!d||x.Department===d)&&(!m||x.MedicalStatus===m)&&x.FullName.toLowerCase().includes(search)
+    );
+    rows.forEach(row => {
+      const name = row.children[1].textContent.toLowerCase();
+      const country = row.children[2].textContent;
+      const dept = row.children[3].textContent;
+      const med = row.children[6].textContent;
+      const match = (!c||country===c)&&(!d||dept===d)&&(!m||med===m)&&name.includes(search);
+      row.style.display = match ? "" : "none";
+    });
+    updateCards(filteredData);
+  }
+
+  [searchName,fCountry,fDept,fMed].forEach(el=>el.addEventListener("input",applyFilters));
+  clearBtn.addEventListener("click",()=>{[searchName,fCountry,fDept,fMed].forEach(el=>el.value="");applyFilters();});
 }
-[searchName,fCountry,fDept,fMed].forEach(el=>el.addEventListener("input",applyFilters));
-clearBtn.addEventListener("click",()=>{
-  [searchName,fCountry,fDept,fMed].forEach(el=>el.value="");
-  applyFilters();
-});
 </script>
 
 </body>
