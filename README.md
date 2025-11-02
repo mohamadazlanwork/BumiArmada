@@ -195,7 +195,7 @@ tbody tr:hover td {
 </head>
 <body>
 
-<h1>🚢 Bumi Armada Employee Lifecycle Dashboard</h1>
+<h1>Bumi Armada Employee Lifecycle Dashboard</h1>
 <div id="lastUpdated">Loading live data...</div>
 
 <!-- KPI CARDS -->
