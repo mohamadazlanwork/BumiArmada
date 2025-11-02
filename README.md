@@ -152,6 +152,45 @@ tbody tr:hover td {
   color: #cbd5e1;
   font-size: 14px;
 }
+/* 🌙 DARK MODE THEME */
+.dark-mode {
+  background: #0a0a0a;
+  color: #e5e5e5;
+}
+
+.dark-mode table {
+  background: rgba(255,255,255,0.05);
+  color: #e5e5e5;
+}
+
+.dark-mode th {
+  background: rgba(255,255,255,0.15);
+  color: #93c5fd;
+}
+
+.dark-mode td {
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.dark-mode .card {
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 4px 20px rgba(0,255,255,0.2);
+}
+
+.dark-mode select,
+.dark-mode input {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.dark-mode button {
+  background: #10b981;
+}
+
+.dark-mode #lastUpdated {
+  color: #38bdf8;
+  text-shadow: 0 0 8px #38bdf8;
+}  
 </style>
 </head>
 <body>
@@ -283,18 +322,30 @@ document.getElementById("toggleTheme")?.addEventListener("click", () => {
   document.body.classList.toggle("dark-mode");
 });
 
-// === 💾 EXPORT TO CSV ===
+// === 💾 EXPORT FILTERED ROWS TO CSV ===
 document.getElementById("exportCSV")?.addEventListener("click", () => {
-  const table = document.getElementById("empTable");
-  let csv = [];
-  for (let row of table.rows) {
-    let cells = Array.from(row.cells).map(td => `"${td.innerText}"`);
-    csv.push(cells.join(","));
+  const rows = Array.from(document.querySelectorAll("#empTable tbody tr"))
+    .filter(r => r.style.display !== "none"); // hanya yang visible
+
+  if (rows.length === 0) {
+    alert("No data to export. Please adjust your filters.");
+    return;
   }
+
+  const header = Array.from(document.querySelectorAll("#empTable thead th"))
+    .map(th => `"${th.innerText}"`)
+    .join(",");
+  
+  const csv = [header];
+  rows.forEach(row => {
+    const cells = Array.from(row.cells).map(td => `"${td.innerText}"`);
+    csv.push(cells.join(","));
+  });
+
   const blob = new Blob([csv.join("\n")], { type: "text/csv" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `BumiArmada_Export_${new Date().toISOString().split("T")[0]}.csv`;
+  a.download = `BumiArmada_Filtered_${new Date().toISOString().split("T")[0]}.csv`;
   a.click();
 });
 
