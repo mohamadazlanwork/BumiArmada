@@ -586,7 +586,7 @@ footer a:hover{text-decoration:underline;}
 
   <!-- ========== FOOTER SECTION ========== -->
   <footer>
-    <p>© 2025 Bumi Armada · Employee Lifecycle Dashboard</p>
+    <p>© 2020 Bumi Armada · Employee Lifecycle Dashboard</p>
     <p>Created by <a href="#">Azlan</a> · For demo visualisation only</p>
     <div class="footer-wave"></div>
   </footer>
@@ -803,7 +803,7 @@ footer a:hover{text-decoration:underline;}
 
   <!-- ========== FINAL NOTES ========== -->
   <div class="note" style="margin-top:60px;">
-    © 2025 Bumi Armada · Employee Lifecycle Dashboard | Created by Azlan  | ⚠️ For demo visualisation only – no actual records used.
+    © 2020 Bumi Armada · Employee Lifecycle Dashboard | Created by Azlan
   </div>
 
 
